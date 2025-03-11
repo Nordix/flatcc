@@ -11,7 +11,7 @@ permissions:
 jobs:
   ubuntu-ninja-clang:
     name: Ubuntu (ninja, clang)
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Prepare
         run: |
@@ -27,7 +27,7 @@ jobs:
 
   ubuntu-make-gcc:
     name: Ubuntu (make, gcc)
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - name: Build and run tests

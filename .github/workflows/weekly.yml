@@ -14,7 +14,7 @@ permissions:
 jobs:
   clang:
     name: Clang ${{ matrix.clang-version }}
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
@@ -32,7 +32,7 @@ jobs:
 
   clang-32bit:
     name: Clang 32bit
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Prepare
         run: |
@@ -49,7 +49,7 @@ jobs:
 
   gcc-old:
     name: GCC 4.4
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Setup GCC
         run: |
@@ -75,7 +75,7 @@ jobs:
 
   gcc:
     name: GCC ${{ matrix.gcc-version }}
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
@@ -93,7 +93,7 @@ jobs:
 
   gcc-32bit:
     name: GCC 32bit
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Prepare
         run: |
@@ -216,7 +216,7 @@ jobs:
 
   cmake-minimum-required:
     name: CMake 2.8.12 (min. required)
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Setup cmake
         uses: jwlawson/actions-setup-cmake@802fa1a2c4e212495c05bf94dba2704a92a472be # v2.0.2
