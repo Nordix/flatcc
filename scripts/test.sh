@@ -26,7 +26,7 @@ echo "building before tests ..."
 $ROOT/scripts/build.sh $DEBUG
 
 echo "running test in debug build ..."
-cd $DBGDIR && ctest $ROOT
+cd $DBGDIR && ctest -VV $ROOT
 
 if [ "$DEBUG" != "--debug" ]; then
 echo "running test in release build ..."
