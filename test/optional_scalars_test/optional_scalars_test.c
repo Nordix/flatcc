@@ -256,6 +256,34 @@ int test_json_parser(void)
     return 0;
 }
 
+int test2(void)
+{
+    flatcc_builder_t builder;
+    void  *buf;
+    size_t size;
+
+    flatcc_builder_init(&builder);
+    ns(MyTable_start(&builder));
+    ns(MyTable_end(&builder));
+    buf = flatcc_builder_finalize_aligned_buffer(&builder, &size);
+
+    /* test_assert(0 == create_scalar_stuff(&builder)); */
+    /* buf = flatcc_builder_finalize_aligned_buffer(&builder, &size); */
+    /* test_assert(0 == access_scalar_stuff(buf)); */
+    /* flatcc_builder_aligned_free(buf); */
+    /* flatcc_builder_clear(&builder); */
+
+    ns(MyTable_table_t) t = ns(MyTable_as_root(buf));
+
+    test_assert(0 == ns(MyTable_u64_0_get(t)));
+    test_assert(0 == ns(MyTable_u64_1_get(t)));
+
+    flatcc_builder_aligned_free(buf);
+    flatcc_builder_clear(&builder);
+
+    return 0;
+}
+
 int main(int argc, char *argv[])
 {
     /* Silence warnings. */
@@ -264,6 +292,10 @@ int main(int argc, char *argv[])
 
     if (test()) {
         printf("optional scalars test failed");
+        return 1;
+    }
+    if (test2()) {
+        printf("optional scalars test 2 failed");
         return 1;
     }
     if (test_json_printer()) {

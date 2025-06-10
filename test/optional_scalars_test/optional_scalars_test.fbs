@@ -69,3 +69,8 @@ table ScalarStuff {
   default_yfactor: OptionalFactor = Twice;
 
 }
+
+table MyTable {
+  u64_0: uint64 = 0;
+  u64_1: uint64 = 0;
+}
