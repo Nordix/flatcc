@@ -68,4 +68,10 @@ table ScalarStuff {
   maybe_yfactor: OptionalFactor = null;
   default_yfactor: OptionalFactor = Twice;
 
+  nested_table: NestedTable;
+}
+
+table NestedTable {
+  u64_0: uint64 = null;
+  u64_1: uint64 = null;
 }

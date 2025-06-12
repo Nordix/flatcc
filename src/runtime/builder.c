@@ -608,7 +608,10 @@ static int enter_frame(flatcc_builder_t *B, uint16_t align)
 
 static inline void exit_frame(flatcc_builder_t *B)
 {
-    memset(B->ds, 0, B->ds_offset);
+    /* Clear the ds stack (if any struct frames have been allocated). */
+    if (B->ds) {
+        memset(B->ds, 0, B->ds_offset);
+    }
     B->ds_offset = frame(ds_offset);
     B->ds_first = frame(ds_first);
     refresh_ds(B, frame(type_limit));

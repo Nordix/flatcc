@@ -21,6 +21,11 @@ int create_scalar_stuff(flatcc_builder_t *builder)
 {
     ns(ScalarStuff_start_as_root(builder));
 
+    /* Test of creating a table before any fields are added. */
+    ns(NestedTable_ref_t) nested_table;
+    ns(NestedTable_start(builder));
+    nested_table = ns(NestedTable_end(builder));
+
     ns(ScalarStuff_just_i8_add(builder, 10));
     ns(ScalarStuff_maybe_i8_add(builder, 11));
     ns(ScalarStuff_default_i8_add(builder, 12));
@@ -48,6 +53,8 @@ int create_scalar_stuff(flatcc_builder_t *builder)
     ns(ScalarStuff_just_xfactor_add)(builder, ns(OptionalFactor_Twice));
     ns(ScalarStuff_maybe_xfactor_add)(builder, ns(OptionalFactor_Twice));
     ns(ScalarStuff_default_xfactor_add)(builder, ns(OptionalFactor_Twice));
+
+    ns(ScalarStuff_nested_table_add)(builder,nested_table);
 
     ns(ScalarStuff_end_as_root(builder));
 
@@ -176,7 +183,7 @@ int test(void)
 }
 
 const char *expected_json =
-"{\"just_i8\":10,\"maybe_i8\":11,\"default_i8\":12,\"just_i16\":42,\"maybe_i16\":42,\"maybe_u32\":0,\"default_u32\":0,\"just_f32\":42,\"maybe_f32\":42,\"just_bool\":true,\"maybe_bool\":true,\"just_enum\":\"One\",\"maybe_enum\":\"One\",\"just_xfactor\":\"Twice\",\"maybe_xfactor\":\"Twice\"}";
+"{\"just_i8\":10,\"maybe_i8\":11,\"default_i8\":12,\"just_i16\":42,\"maybe_i16\":42,\"maybe_u32\":0,\"default_u32\":0,\"just_f32\":42,\"maybe_f32\":42,\"just_bool\":true,\"maybe_bool\":true,\"just_enum\":\"One\",\"maybe_enum\":\"One\",\"just_xfactor\":\"Twice\",\"maybe_xfactor\":\"Twice\",\"nested_table\":{}}";
 
 #if 0
 int print_buffer(const void *buf, size_t size)
