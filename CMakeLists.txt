@@ -207,6 +207,12 @@ if (CMAKE_C_COMPILER_ID MATCHES "Clang" AND NOT "${CMAKE_CXX_SIMULATE_ID}" STREQ
         if (CMAKE_BUILD_TYPE MATCHES Debug)
             set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=undefined")
             set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=undefined")
+            # Don't recover from found issues, we want tests to exit. We then need `__has_feature`
+            # which was added in clang-8, see https://github.com/llvm/llvm-project/commit/b32d404
+            if (NOT CMAKE_C_COMPILER_VERSION VERSION_LESS 8)
+                set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-sanitize-recover=all")
+                set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-sanitize-recover=all")
+            endif()
         endif()
     endif()
     # Suppress warning relaxed in clang-6, see https://reviews.llvm.org/D28148
