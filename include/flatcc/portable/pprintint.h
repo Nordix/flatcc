@@ -102,7 +102,9 @@ static int print_int(int n, char *p);
 static int print_long(long n, char *p);
 
 
-#if defined(__i386__) || defined(__x86_64__) || defined(_M_IX86) || defined(_M_X64)
+/* The UBSan will warn about storing to misaligned address. */
+#if !(defined(__has_feature) && __has_feature(undefined_behavior_sanitizer)) && \
+    (defined(__i386__) || defined(__x86_64__) || defined(_M_IX86) || defined(_M_X64))
 #define __print_unaligned_copy_16(p, q) (*(uint16_t*)(p) = *(uint16_t*)(q))
 #else
 #define __print_unaligned_copy_16(p, q)                                     \

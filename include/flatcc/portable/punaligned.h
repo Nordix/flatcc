@@ -28,7 +28,10 @@ extern "C" {
 
 #ifndef PORTABLE_UNALIGNED_ACCESS
 
-#if defined(__i386__) || defined(__x86_64__) || defined(_M_IX86) || defined(_M_X64)
+#if defined(__has_feature) && __has_feature(undefined_behavior_sanitizer)
+/* The UBSan will warn about unaligned access. */
+#define PORTABLE_UNALIGNED_ACCESS 0
+#elif defined(__i386__) || defined(__x86_64__) || defined(_M_IX86) || defined(_M_X64)
 #define PORTABLE_UNALIGNED_ACCESS 1
 #else
 #define PORTABLE_UNALIGNED_ACCESS 0
