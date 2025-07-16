@@ -18,7 +18,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        clang-version: [5, 7, 9, 11, 13, 15, 17, 18, 19]
+        clang-version: [5, 7, 9, 11, 13, 15, 17, 19, 20]
     steps:
       - name: Setup Clang
         uses: aminya/setup-cpp@004edc19527a83d56cda032658aab55c5e2ed48f # v1.7.0
