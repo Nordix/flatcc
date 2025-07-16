@@ -1,6 +1,12 @@
 include(CTest)
 
 # Note: This re-uses the samples/monster fbs and .c file.
+# According to the C++ standard Section 6.9.3.1 of ISO/IEC 14882:2024
+# "an entity named main with C language linkage (in any namespace) is ill-formed"
+# Let's disable the warning from Clang that we include main() using extern "C".
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    add_compile_options(-Wno-main)
+endif()
 
 set(INC_DIR "${PROJECT_SOURCE_DIR}/include")
 # We use our own separate gen dir so we don't clash with the real monster sample.
