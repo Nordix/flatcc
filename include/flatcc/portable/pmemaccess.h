@@ -115,6 +115,8 @@ extern "C" {
    such as reading from uninitialized stack memory when strict aliasing is the default
    optimization strategy.
 
+   `mem_copy_word_2` is a specialization of `mem_copy_word` but with a fixed size of 2 bytes.
+
    Note: __has_builtin is not necessarily defined on platforms with __builtin_memcpy support,
    so detection can be improved. Feel free to contribute.
 
@@ -154,8 +156,11 @@ extern "C" {
     #endif
 #endif
 
-        
-#if PORTABLE_MEM_PTR_ACCESS 
+#ifndef mem_copy_word_2
+#  define mem_copy_word_2(d, s) mem_copy_word((d), (s), 2)
+#endif
+
+#if PORTABLE_MEM_PTR_ACCESS
 
 #define mem_read_8(p)  (*(uint8_t*)(p))
 #define mem_read_16(p) (*(uint16_t*)(p))
