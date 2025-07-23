@@ -2535,7 +2535,7 @@ int verify_include(void *buffer)
 
 int test_struct_buffer(flatcc_builder_t *B)
 {
-    uint8_t buffer[100];
+    alignas(16) uint8_t buffer[100];
 
     size_t size;
     ns(Vec3_t) *v;
@@ -2568,8 +2568,6 @@ int test_struct_buffer(flatcc_builder_t *B)
     /* Convert buffer to native in place - a nop on native platform. */
     v = (ns(Vec3_t) *)vec3;
     ns(Vec3_from_pe(v));
-/* UBSan warns about member access within misaligned address. */
-#if !(defined(__has_feature) && __has_feature(undefined_behavior_sanitizer))
     if (!parse_float_is_equal(v->x, 1.0f) || !parse_float_is_equal(v->y, 2.0f) || !parse_float_is_equal(v->z, 3.0f)
         || !parse_double_is_equal(v->test1, 4.2) || v->test2 != ns(Color_Blue)
         || v->test3.a != 2730 || v->test3.b != -17
@@ -2577,7 +2575,6 @@ int test_struct_buffer(flatcc_builder_t *B)
         printf("struct buffer not valid\n");
         return -1;
     }
-#endif
     assert(ns(Color_Red) == 1 << 0);
     assert(ns(Color_Green) == 1 << 1);
     assert(ns(Color_Blue) == 1 << 3);
@@ -2587,7 +2584,7 @@ int test_struct_buffer(flatcc_builder_t *B)
 
 int test_typed_struct_buffer(flatcc_builder_t *B)
 {
-    uint8_t buffer[100];
+    alignas(16) uint8_t buffer[100];
 
     size_t size;
     ns(Vec3_t) *v;
@@ -2636,8 +2633,6 @@ int test_typed_struct_buffer(flatcc_builder_t *B)
     /* Convert buffer to native in place - a nop on native platform. */
     v = (ns(Vec3_t) *)vec3;
     ns(Vec3_from_pe(v));
-/* UBSan warns about member access within misaligned address. */
-#if !(defined(__has_feature) && __has_feature(undefined_behavior_sanitizer))
     if (!parse_float_is_equal(v->x, 1.0f) || !parse_float_is_equal(v->y, 2.0f) || !parse_float_is_equal(v->z, 3.0f)
         || !parse_double_is_equal(v->test1, 4.2) || v->test2 != ns(Color_Blue)
         || v->test3.a != 2730 || v->test3.b != -17
@@ -2645,7 +2640,6 @@ int test_typed_struct_buffer(flatcc_builder_t *B)
         printf("struct buffer not valid\n");
         return -1;
     }
-#endif
     assert(ns(Color_Red) == 1 << 0);
     assert(ns(Color_Green) == 1 << 1);
     assert(ns(Color_Blue) == 1 << 3);
