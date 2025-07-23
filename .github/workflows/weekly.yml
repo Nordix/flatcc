@@ -228,3 +228,19 @@ jobs:
           cmake --version
           scripts/initbuild.sh make-concurrent
           scripts/test.sh
+
+  big-endian:
+    name: Big-endian (s390x via QEMU)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: uraimo/run-on-arch-action@d94c13912ea685de38fccc1109385b83fd79427d # v3.0.1
+        with:
+          arch: s390x
+          distro: ubuntu24.04
+          install: |
+            apt-get update
+            apt-get install -y --no-install-recommends build-essential cmake
+          run: |
+            scripts/initbuild.sh make-concurrent
+            scripts/test.sh
