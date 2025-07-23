@@ -6,6 +6,7 @@
 #include "flatcc/support/hexdump.h"
 #include "flatcc/support/elapsed.h"
 #include "flatcc/portable/pparsefp.h"
+#include "flatcc/portable/pstdalign.h"
 #include "../../config/config.h"
 
 /*
@@ -2535,7 +2536,11 @@ int verify_include(void *buffer)
 
 int test_struct_buffer(flatcc_builder_t *B)
 {
-    uint8_t buffer[100];
+    /* Allocate a buffer and make sure it's aligned on targets that don't
+     * use a 16 bytes stack alignment (e.g. 32-bit/x86 and s390x).
+     * This will avoid an undefined behaviour in this testcase:
+     * "member access within misaligned address". */
+    alignas(16) uint8_t buffer[100];
 
     size_t size;
     ns(Vec3_t) *v;
@@ -2584,7 +2589,11 @@ int test_struct_buffer(flatcc_builder_t *B)
 
 int test_typed_struct_buffer(flatcc_builder_t *B)
 {
-    uint8_t buffer[100];
+    /* Allocate a buffer and make sure it's aligned on targets that don't
+     * use a 16 bytes stack alignment (e.g. 32-bit/x86 and s390x).
+     * This will avoid an undefined behaviour in this testcase:
+     * "member access within misaligned address". */
+    alignas(16) uint8_t buffer[100];
 
     size_t size;
     ns(Vec3_t) *v;
