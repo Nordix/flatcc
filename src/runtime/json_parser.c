@@ -103,6 +103,7 @@ again:
      */
     //cmpistri(end, buf, "\x20\t\v\f\r\n", _SIDD_NEGATIVE_POLARITY);
     cmpistri(end, buf, "\x20\t\v\f", _SIDD_NEGATIVE_POLARITY);
+/*
 #else
 #if FLATCC_ALLOW_UNALIGNED_ACCESS
     while (end - buf >= 16) {
@@ -136,6 +137,7 @@ descend:
 #endif
     }
 #endif
+*/
 #endif
     while (buf != end && *buf == 0x20) {
         ++buf;
