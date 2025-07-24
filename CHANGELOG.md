@@ -58,6 +58,9 @@
   using the str_set table for other purposes. (#308).
 - Fix some GCC indentation warnings in generated code - warnings are
   disabled in build already, but this may help some users (#313).
+- Fix %d vs uint32 type in some printformatting (#315).
+- Fix UB in builder, memsetting 0 bytes of null pointer (#344).
+- Fix GCC 15 warning in grisu3 (#338).
 
 ## [0.6.1]
 

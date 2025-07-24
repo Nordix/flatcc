@@ -1294,8 +1294,8 @@ static void gen_struct(fb_output_t *out, fb_compound_type_t *ct)
             tname = scalar_type_name(member->type.st);
             tname_prefix = scalar_type_prefix(member->type.st);
             fprintf(out->fp,
-                "__%sdefine_struct_scalar_fixed_array_field(%s, %.*s, %s%s, %s%s, %d)\n",
-                nsc, snt.text, n, s, nsc, tname_prefix, tname_ns, tname, member->type.len);
+                "__%sdefine_struct_scalar_fixed_array_field(%s, %.*s, %s%s, %s%s, %"PRIu64")\n",
+                nsc, snt.text, n, s, nsc, tname_prefix, tname_ns, tname, (uint64_t)member->type.len);
             /* TODO: if member->type.st == fb_char add string specific methods. */
             break;
         case vt_scalar_type:
@@ -1344,13 +1344,13 @@ static void gen_struct(fb_output_t *out, fb_compound_type_t *ct)
             switch (member->type.ct->symbol.kind) {
             case fb_is_enum:
                 fprintf(out->fp,
-                    "__%sdefine_struct_scalar_fixed_array_field(%s, %.*s, %s, %s_enum_t, %d)\n",
-                    nsc, snt.text, n, s, snref.text, snref.text, member->type.len);
+                    "__%sdefine_struct_scalar_fixed_array_field(%s, %.*s, %s, %s_enum_t, %"PRIu64")\n",
+                    nsc, snt.text, n, s, snref.text, snref.text, (uint64_t)member->type.len);
                 break;
             case fb_is_struct:
                 fprintf(out->fp,
-                    "__%sdefine_struct_struct_fixed_array_field(%s, %.*s, %s_struct_t, %d)\n",
-                    nsc, snt.text, n, s, snref.text, member->type.len);
+                    "__%sdefine_struct_struct_fixed_array_field(%s, %.*s, %s_struct_t, %"PRIu64")\n",
+                    nsc, snt.text, n, s, snref.text, (uint64_t)member->type.len);
                 break;
             }
             break;
