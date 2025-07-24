@@ -307,11 +307,11 @@ static inline uint64_t flatcc_json_parser_symbol_part(const char *buf, const cha
 {
     size_t n = (size_t)(end - buf);
 
-#if FLATCC_ALLOW_UNALIGNED_ACCESS
-    if (n >= 8) {
-        return be64toh(*(uint64_t *)buf);
-    }
-#endif
+// #if FLATCC_ALLOW_UNALIGNED_ACCESS
+//     if (n >= 8) {
+//         return be64toh(*(uint64_t *)buf);
+//     }
+// #endif
     return flatcc_json_parser_symbol_part_ext(buf, end);
 }
 
