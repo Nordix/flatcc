@@ -232,6 +232,29 @@ jobs:
           msbuild FlatCC.sln /m /property:Configuration=Release
           ctest -VV
 
+  debian:
+    name: Debian ${{ matrix.version }} "${{ matrix.name }}"
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - version: 12
+            name: Bookworm
+          - version: 11
+            name: Bullseye
+    container:
+      image: debian:${{ matrix.version }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Prepare
+        run: |
+          apt update && apt-get install -y build-essential cmake
+      - name: Build and run tests
+        run: |
+          scripts/initbuild.sh make-concurrent
+          scripts/test.sh
+
   cmake-minimum-required:
     name: CMake 2.8.12 (min. required)
     runs-on: ubuntu-24.04
