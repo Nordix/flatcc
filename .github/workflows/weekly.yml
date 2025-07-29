@@ -279,6 +279,7 @@ jobs:
         with:
           arch: s390x
           distro: ubuntu24.04
+          githubToken: ${{ github.token }}
           install: |
             apt-get update
             apt-get install -y --no-install-recommends build-essential cmake
