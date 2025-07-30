@@ -322,47 +322,43 @@ fi
 
 ## Status
 
-Release 0.6.2 (in development) is primarily a bug fix release, refer
-to CHANGELOG for details. A long standing bug has been fixed where
-where objects created before a call to _create_as_root would not be
-properly aligned, and buffer end is now also padded to largest object
-seen within the buffer.
-Note that for clang debug builds, -fsanitize=undefined has been
-added and this may require dependent source code to also use
-that flag to avoid missing linker symbols. The feature can be disabled
-in CMakeLists.txt.
+Release 0.6.2 (in development) is primarily a bug fix release, refer to
+CHANGELOG for details. A long standing bug has been fixed where where objects
+created before a call to _create_as_root would not be properly aligned, and
+buffer end is now also padded to largest object seen within the buffer. Note
+that for clang debug builds, -fsanitize=undefined has been added and this may
+require dependent source code to also use that flag to avoid missing linker
+symbols. The feature can be disabled in CMakeLists.txt. CMake has been bumped to
+version 3.16 which is the latest version where Appveyor will build MVSC 2015.
 
-Release 0.6.1 contains primarily bug fixes and numerous contributions
-from the community to handle platform edge cases. Additionally,
-pendantic GCC warnings are disabled, relying instead on clang, since GCC
-is too aggressive, breaks builds frequently and works against
-portability. An existing C++ test case ensures that C code also works
-with common C++ compilers, but it can break some environments, so there
-is now a flag to disable that test without disabling all tests. Support
-for Optional Scalar Values in the FlatBuffer format has been added.
-There is also improved support for abstracting memory allocation on
-various platforms. `<table>_identifier` has been deprecated in favor
-`<table>_file_identifier` in generated code due to `identifier` easily
-leading to name conflicts. `file_extension` constant in generated code
-is now without prefixed dot (.).
+Release 0.6.1 contains primarily bug fixes and numerous contributions from the
+community to handle platform edge cases. Additionally, pendantic GCC warnings
+are disabled, relying instead on clang, since GCC is too aggressive, breaks
+builds frequently and works against portability. An existing C++ test case
+ensures that C code also works with common C++ compilers, but it can break some
+environments, so there is now a flag to disable that test without disabling
+all tests. Support for Optional Scalar Values in the FlatBuffer format has
+been added. There is also improved support for abstracting memory allocation
+on various platforms. `<table>_identifier` has been deprecated in favor
+`<table>_file_identifier` in generated code due to `identifier` easily leading
+to name conflicts. `file_extension` constant in generated code is now without
+prefixed dot (.).
 
-Release 0.6.0 introduces a "primary" attribute to be used together with
-a key attribute to chose default key for finding and sorting. If primary
-is absent, the key with the lowest id becomes primary. Tables and
-vectors can now be sorted recursively on primary keys. BREAKING:
-previously the first listed, not the lowest id, would be the primary
-key. Also introduces fixed length scalar arrays in struct fields (struct
-and enum elements are not supported). Structs support fixed length array
-fields, including char arrays. Empty structs never fully worked and are
-no longer supported, they are also no longer supported by flatc.
-NOTE: char arrays are not currently part of Googles flatc compiler -
-int8 arrays may be used instead. BREAKING: empty structs are no longer
-supported - they are also not valid in Googles flatc compiler. See
-CHANGELOG for additional changes. DEPRECATED: low-level `cast_to/from`
-from functions in `flatcc_accessors.h` will be removed in favor of
-`read/write_from/to` because the cast interface breaks float conversion
-on some uncommon platforms. This should not affect normal use but
-remains valid in this release.
+Release 0.6.0 introduces a "primary" attribute to be used together with a key
+attribute to chose default key for finding and sorting. If primary is absent,
+the key with the lowest id becomes primary. Tables and vectors can now be sorted
+recursively on primary keys. BREAKING: previously the first listed, not the
+lowest id, would be the primary key. Also introduces fixed length scalar arrays
+in struct fields (struct and enum elements are not supported). Structs support
+fixed length array fields, including char arrays. Empty structs never fully
+worked and are no longer supported, they are also no longer supported by flatc.
+NOTE: char arrays are not currently part of Googles flatc compiler - int8 arrays
+may be used instead. BREAKING: empty structs are no longer supported - they are
+also not valid in Googles flatc compiler. See CHANGELOG for additional changes.
+DEPRECATED: low-level `cast_to/from` from functions in `flatcc_accessors.h` will
+be removed in favor of `read/write_from/to` because the cast interface breaks
+float conversion on some uncommon platforms. This should not affect normal use
+but remains valid in this release.
 
 Release 0.5.3 inlcudes various bug fixes (see changelog) and one
 breaking but likely low impact change: BREAKING: 0.5.3 changes behavour
@@ -428,12 +424,15 @@ different target platforms.
 
 ### Supported platforms (CI tested)
 
-This list is somewhat outdated, more recent compiler versions are added and
-some old ones are removed when CI platforms no longer supported but largely
-the supported targets remain unchanged. MSVC 2010 might become deprecated
-in the future.
+As of flatcc v.0.6.2 the weekly build on github actions tests a range of
+gcc and clang versions on Ubuntu and macOS but the lists changes slightly
+as the underlying CI runners sometimes drop a compiler version. Windows
+is tested on Appveyor with MSVC 2025 and a later version on Github actions.
+See the appveyour and github actions workflow files for details.
 
-The ci-more branch tests additional compilers:
+In the past (ca. < flatcc-0.6.2) the following have been tested, and chances are
+that an older version of flatcc is still useful if the latest version does not
+compile on a given platform.
 
 - Ubuntu Trusty gcc 4.4, 4.6-4.9, 5, 6, 7 and clang 3.6, 3.8
 - OS-X current clang / gcc
@@ -446,9 +445,6 @@ The GCC `--pedantic` compiler option is not supported as of GCC-8+
 because it forces non-portable code changes and because it tends to
 break the code base with each new GCC release.
 
-MSVC 2017 is not always tested because the CI environment then won't
-support MSVC 2010.
-
 Older/non-standard versions of C++ compilers cause problems because
 `static_assert` and `alignas` behave in strange ways where they are
 neither absent nor fully working as expected. There are often
@@ -458,10 +454,6 @@ workarounds, but it is more reliable to use `-std=c++11` or
 The portably library does not support GCC C++ pre 4.7 because the
 portable library does not work around C++ limitations in stdalign.h and
 stdint.h before GCC 4.7. This could be fixed but is not a priority.
-
-Some previously testet compiler versions may have been retired as the
-CI environment gets updated. See `.travis.yml` and `appveyor.yml` in
-the `ci-more` branch for the current configuration.
 
 The monster sample does not work with MSVC 2010 because it intentionally
 uses C99 style code to better follow the C++ version.
@@ -480,6 +472,7 @@ tests (a simple C++ file that includes generated C code).
 - Arduino
 - IBM XLC on AIX big endian Power PC has been tested for release 0.4.0
   but is not part of regular release tests.
+- IBM s390x big endian via QEMU.
 
 ### Portability
 

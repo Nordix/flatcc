@@ -61,6 +61,8 @@
 - Fix %d vs uint32 type in some printformatting (#315).
 - Fix UB in builder, memsetting 0 bytes of null pointer (#344).
 - Fix GCC 15 warning in grisu3 (#338).
+- Bump CMake to >= 3.26.1 (Debian Bookworm).
+- Fix CMAKE warnings on custom commands with TARGET and DEPENDS (CMP0175).
 
 ## [0.6.1]
 
