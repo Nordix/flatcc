@@ -1,6 +1,5 @@
-```
 flatcc FlatBuffers schema compiler for C by dvide.com
-version: 0.5.2-pre
+version: 0.6.2
 usage: flatcc [options] file [...]
 options:
   --reader                   (default) Generate reader
@@ -12,6 +11,7 @@ options:
   -r, --recursive            Recursively generate included schema files
   -a                         Generate all (like -cwvr)
   -g                         Use _get suffix only to avoid conflicts
+  -s                         Silence warnings
   -d                         Dependency file like gcc -MMD
   -I<inpath>                 Search path for include files (multiple allowed)
   -o<outpath>                Write files relative to this path (dir must exist)
@@ -63,6 +63,11 @@ only 'Monster_name_get(monster)` will be generated and not also
 'Monster_name(monster)'. This avoids potential conflicts with
 other generated symbols when a schema change is impractical.
 
+-s Silence warnings, notably on potential conflicts that might cause
+C source code to generate errors. These warnings are not perfect and can
+be ignored if the C code compiles, though it is recommended to change
+names in the schema if possible.
+
 -d generates a dependency file, e.g. 'monster.fbs.d' in the output dir.
 
 --depfile implies -d but accepts an explicit filename with a path
@@ -103,4 +108,3 @@ time assertions and inline functions but an optional set of portability
 headers can be included to work with most any compiler. The portability
 layer is not throughly tested so a platform specific test is required
 before production use. Upstream patches are welcome.
-```
