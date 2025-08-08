@@ -29,6 +29,87 @@ static const char *fb_known_attribute_names[] = {
     "sorted",
 };
 
+static const char *fb_reserved_kw_enum_members[] = {
+    "_const_ptr_add",
+    "_ptr_add",
+    "_size",
+    "array_copy",
+    "array_copy_from_pe",
+    "array_copy_to_pe",
+    "assign",
+    "assign_from_pe",
+    "assign_to_pe",
+    "cast_from_be",
+    "cast_from_le",
+    "cast_from_pe",
+    "cast_to_be",
+    "cast_to_le",
+    "cast_to_pe",
+    "copy",
+    "copy_from_pe",
+    "copy_to_pe",
+    "enum_t",
+    "from_pe",
+    "is_known_value",
+    "name",
+    "parse_json_enum",
+    "print_json_enum",
+    "read",
+    "read_from_pe",
+    "read_to_pe",
+    "to_pe",
+    // "vec_*",
+    "write",
+    "write_from_pe",
+    "write_to_pe",
+};
+
+static const char *fb_reserved_kw_table_fields[] = {
+      "add_type",
+      "add_value",
+      "begin",
+      "clone",
+      "create",
+      "end",
+      "end_pe",
+      "force_add",
+      "table_t",
+      "verity_table",
+};
+
+static const char *fb_reserved_kw_table_field_prefixes[] = {
+      "as_",
+      "clone_as_",
+      "create_as_",
+      "end_as_",
+      "parse_json_",
+      "print_json_",
+      "start_as_",
+      // "vec_  ",
+      "verify_as_*",
+};
+
+static const char *fb_reserved_kw_table_field_suffixes[] = {
+      "_add",
+      "_clone",
+      "_create",
+      "_end",
+      "_get",
+      "_get_ptr",
+      "_force_add",
+      "_is_present",
+      "_pick",
+      "_push_start",
+      "_push_end",
+      "_push_create",
+      "_start",
+};
+
+/* For table and enum members. */
+static const char *fb_reserved_kw_vec_prefixes[] = {
+      "vec_",
+};
+
 static const int fb_known_attribute_types[] = {
     vt_invalid, /* Unknowns have arbitrary types. */
     vt_uint,
@@ -392,6 +473,110 @@ static void install_known_attributes(fb_parser_t *P)
              * (Memory leak is ok here.)
              */
             a->known = i;
+        }
+    }
+}
+
+static void install_reserved_keyword_table(fb_parser_t *P, const char *table[], size_t count, int kind)
+{
+    fb_reserved_kw_t *kw;
+    size_t i;
+
+    for (i = 0; i < count; ++i) {
+        kw = new_elem(P, sizeof(*kw));
+        kw->name.name.s.s = (char *)table[i];
+        kw->name.name.s.len = (int)strlen(table[i]);
+        kw->name.link = 0;
+        kw->kind = kind;
+        define_fb_name(&P->schema.root_schema->keyword_index, &kw->name);
+    }
+}
+
+#define KW_TABLE_LEN(T) (sizeof(T)/sizeof(T[0]))
+
+static void install_reserved_keywords(fb_parser_t *P)
+{
+    install_reserved_keyword_table(P, fb_reserved_kw_enum_members,
+                                   KW_TABLE_LEN(fb_reserved_kw_enum_members),
+                                   fb_reserved_kw_kind_enum_member);
+    install_reserved_keyword_table(P, fb_reserved_kw_table_fields,
+                                   KW_TABLE_LEN(fb_reserved_kw_table_fields),
+                                   fb_reserved_kw_kind_table_field);
+    install_reserved_keyword_table(P, fb_reserved_kw_table_field_prefixes,
+                                   KW_TABLE_LEN(fb_reserved_kw_table_field_prefixes),
+                                   fb_reserved_kw_kind_table_field_prefix);
+    install_reserved_keyword_table(P, fb_reserved_kw_table_field_suffixes,
+                                   KW_TABLE_LEN(fb_reserved_kw_table_field_suffixes),
+                                   fb_reserved_kw_kind_table_field_suffix);
+    install_reserved_keyword_table(P, fb_reserved_kw_vec_prefixes,
+                                   KW_TABLE_LEN(fb_reserved_kw_vec_prefixes),
+                                   fb_reserved_kw_kind_vec_prefix);
+}
+
+static void check_reserved_enum_member(fb_parser_t *P, fb_symbol_t *sym)
+{
+    const char *text = sym->ident->text;
+    size_t len = (size_t)sym->ident->len;
+    fb_reserved_kw_t *kw = 0;
+    size_t i;
+
+    kw = (fb_reserved_kw_t *)fb_name_table_find(&P->schema.root_schema->keyword_index,
+                                                         text, len);
+    if (kw && kw->kind == fb_reserved_kw_kind_enum_member) {
+        warn_tok(P, sym->ident, "potential enum member name conflict in C source");
+        warn_tok_as_string(P, sym->ident, "name is reserved", kw->name.name.s.s, (size_t)kw->name.name.s.len);
+        return;
+    }
+    for (i = 0; i < len; ++i) {
+        if (text[i] =='_') {
+            if (i + 1 < len) {
+                kw = (fb_reserved_kw_t *)fb_name_table_find(&P->schema.root_schema->keyword_index,
+                                                         text, i + 1);
+                if (kw && (kw->kind == fb_reserved_kw_kind_vec_prefix)) {
+                    warn_tok(P, sym->ident, "potential enum member name conflict in C source");
+                    warn_tok_as_string(P, sym->ident, "prefix is reserved", kw->name.name.s.s, (size_t)kw->name.name.s.len);
+                    return;
+                }
+            }
+        }
+    }
+}
+
+static void check_reserved_table_field(fb_parser_t *P, fb_symbol_t *sym)
+{
+    const char *text = sym->ident->text;
+    size_t len = (size_t)sym->ident->len;
+    fb_reserved_kw_t *kw = 0;
+    size_t i;
+
+    kw = (fb_reserved_kw_t *)fb_name_table_find(&P->schema.root_schema->keyword_index,
+                                                         text, len);
+    if (kw && kw->kind == fb_reserved_kw_kind_table_field) {
+        warn_tok(P, sym->ident, "potential table field conflict in C source (option -g might help)");
+        warn_tok_as_string(P, sym->ident, "name is reserved", kw->name.name.s.s, (size_t)kw->name.name.s.len);
+        return;
+    }
+    for (i = 0; i < len; ++i) {
+        if (text[i] =='_') {
+            if (i + 1 < len) {
+                kw = (fb_reserved_kw_t *)fb_name_table_find(&P->schema.root_schema->keyword_index,
+                                                         text, i + 1);
+                if (kw && (kw->kind == fb_reserved_kw_kind_table_field_prefix
+                    || kw->kind == fb_reserved_kw_kind_vec_prefix)) {
+                    warn_tok(P, sym->ident, "potential table field conflict in C source (option -g might help)");
+                    warn_tok_as_string(P, sym->ident, "prefix is reserved", kw->name.name.s.s, (size_t)kw->name.name.s.len);
+                    return;
+                }
+            }
+            if (i > 0) {
+                kw = (fb_reserved_kw_t *)fb_name_table_find(&P->schema.root_schema->keyword_index,
+                                                         text + i, len - i);
+                if (kw && kw->kind == fb_reserved_kw_kind_table_field_suffix) {
+                    warn_tok(P, sym->ident, "potential table field conflict in C source (option -g might help)");
+                    warn_tok_as_string(P, sym->ident, "suffix is reserved", kw->name.name.s.s, (size_t)kw->name.name.s.len);
+                    return;
+                }
+            }
         }
     }
 }
@@ -948,6 +1133,7 @@ static int process_table(fb_parser_t *P, fb_compound_type_t *ct)
             error_sym(P, sym, "internal error: member type expected");
             return -1;
         }
+        check_reserved_table_field(P, sym);
         member = (fb_member_t *)sym;
         if (member->type.type == vt_invalid) {
             continue;
@@ -1619,6 +1805,9 @@ static int process_enum(fb_parser_t *P, fb_compound_type_t *ct)
 
     for (sym = ct->members; sym; sym = sym->link, first = 0) {
         member = (fb_member_t *)sym;
+        if (!is_union) {
+            check_reserved_enum_member(P, sym);
+        }
         if ((old = define_fb_symbol(&ct->index, sym))) {
             if (old->ident == &P->t_none) {
                 /*
@@ -1822,6 +2011,7 @@ int fb_build_schema(fb_parser_t *P)
         }
     }
     install_known_attributes(P);
+    install_reserved_keywords(P);
 
     if (!P->opts.hide_later_enum) {
         for (sym = S->symbols; sym; sym = sym->link) {

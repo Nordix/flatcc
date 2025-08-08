@@ -127,6 +127,9 @@ const char *__flatcc_error_find_file_of_token(fb_parser_t *P, fb_token_t *t);
 void __flatcc_error_report(fb_parser_t *P, fb_token_t *t, const char *msg, fb_token_t *peer, const char *s, size_t len);
 #define error_report __flatcc_error_report
 
+void __flatcc_warn_report(fb_parser_t *P, fb_token_t *t, const char *msg, fb_token_t *peer, const char *s, size_t len);
+#define warn_report __flatcc_warn_report
+
 static void error_tok_2(fb_parser_t *P, fb_token_t *t, const char *msg, fb_token_t *peer)
 {
     error_report(P, t, msg, peer, 0, 0);
@@ -135,6 +138,17 @@ static void error_tok_2(fb_parser_t *P, fb_token_t *t, const char *msg, fb_token
 static inline void error_tok(fb_parser_t *P, fb_token_t *t, const char *msg)
 {
     error_tok_2(P, t, msg, 0);
+}
+
+static inline void warn_tok(fb_parser_t *P, fb_token_t *t, const char *msg)
+{
+    warn_report(P, t, msg, 0, 0, 0);
+}
+
+/* Show both token and string */
+static inline void warn_tok_as_string(fb_parser_t *P, fb_token_t *t, const char *msg, const char *s, size_t len)
+{
+    warn_report(P, t, msg, 0, s, len);
 }
 
 /* Only use the token location. */

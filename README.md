@@ -330,6 +330,10 @@ that for clang debug builds, -fsanitize=undefined has been added and this may
 require dependent source code to also use that flag to avoid missing linker
 symbols. The feature can be disabled in CMakeLists.txt. CMake has been bumped to
 version 3.16 which is the latest version where Appveyor will build MVSC 2015.
+Warnings added for potential name conflicts in enum names and table fields
+that could result in confusing C compiler errors. Not all warnigs are errors
+to the option `-s` was also added to silence warnings. The existing `-g`
+option can resolve some conflicts.
 
 Release 0.6.1 contains primarily bug fixes and numerous contributions from the
 community to handle platform edge cases. Additionally, pendantic GCC warnings
@@ -1207,6 +1211,10 @@ deal with this. For more, see [FlatCC #287], [Google Flatbuffers #8374],
 If unfortunate, it is possible to have a read accessor method conflict
 with other generated methods and typenames. Usually a small change in
 the schema will resolve this issue.
+
+As of flatcc 0.6.2 conservative warnings will detect most likely
+potential conflicts in enum member names and table field names. The
+`-s` option silences warnings.
 
 As of flatcc 0.5.2 read accors are generated with and without a `_get`
 suffix so it is also possible to use `Monster_pos_get(monster)` instead

@@ -63,6 +63,8 @@
 - Fix GCC 15 warning in grisu3 (#338).
 - Bump CMake to >= 3.26.1 (Debian Bookworm).
 - Fix CMAKE warnings on custom commands with TARGET and DEPENDS (CMP0175).
+- Issue warnings on some potential name conflicts that can break C source
+  and add `-s` option to silence warnings (#354).
 
 ## [0.6.1]
 

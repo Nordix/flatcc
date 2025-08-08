@@ -24,6 +24,7 @@ typedef fb_symbol_t fb_ref_t;
 typedef fb_symbol_t fb_doc_t;
 typedef fb_name_t fb_include_t;
 typedef struct fb_attribute fb_attribute_t;
+typedef struct fb_reserved_kw fb_reserved_kw_t;
 
 typedef struct fb_member fb_member_t;
 typedef struct fb_compound_type fb_compound_type_t;
@@ -320,9 +321,22 @@ enum fb_known_attribute_flags {
     fb_f_sorted = 1 << fb_attr_sorted,
 };
 
+enum fb_reserved_kw_kind {
+    fb_reserved_kw_kind_table_field = 1,
+    fb_reserved_kw_kind_table_field_prefix = 2,
+    fb_reserved_kw_kind_table_field_suffix = 3,
+    fb_reserved_kw_kind_enum_member = 4,
+    fb_reserved_kw_kind_vec_prefix = 5,
+};
+
 struct fb_attribute {
     fb_name_t name;
     unsigned int known;
+};
+
+struct fb_reserved_kw {
+    fb_name_t name;
+    int kind;
 };
 
 struct fb_scope {
@@ -334,6 +348,7 @@ struct fb_scope {
 struct fb_root_schema {
     fb_scope_table_t scope_index;
     fb_name_table_t attribute_index;
+    fb_name_table_t keyword_index;
     fb_schema_table_t include_index;
     int include_count;
     int include_depth;

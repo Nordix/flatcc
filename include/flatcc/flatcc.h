@@ -54,6 +54,7 @@ struct flatcc_options {
     int bool_size;
     int require_root_type;
     int strict_enum_init;
+    int silence;
     uint64_t vt_max_count;
 
     const char *default_schema_ext;

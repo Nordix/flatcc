@@ -58,10 +58,14 @@ const char *error_find_file_of_token(fb_parser_t *P, fb_token_t *t)
     return "";
 }
 
-void error_report(fb_parser_t *P, fb_token_t *t, const char *msg, fb_token_t *peer, const char *s, size_t len)
+void error_report_ext(fb_parser_t *P, fb_token_t *t, const char *msg, fb_token_t *peer, const char *s, size_t len, int is_warning)
 {
     const char *file, *peer_file;
+    const char *kind = is_warning ? "warning" : "error";
 
+    if (is_warning && P->opts.silence) {
+        return;
+    }
     if (t && !s) {
         s = t->text;
         len = (size_t)t->len;
@@ -75,25 +79,37 @@ void error_report(fb_parser_t *P, fb_token_t *t, const char *msg, fb_token_t *pe
     }
     if (t && !peer) {
         file = error_find_file_of_token(P, t);
-        fb_print_error(P, "%s:%ld:%ld: error: '%.*s': %s\n",
-                file, (long)t->linenum, (long)t->pos, len, s, msg);
+        fb_print_error(P, "%s:%ld:%ld: %s: '%.*s': %s\n",
+                file, (long)t->linenum, (long)t->pos, kind, len, s, msg);
     } else if (t && peer) {
         file = error_find_file_of_token(P, t);
         peer_file = error_find_file_of_token(P, peer);
-        fb_print_error(P, "%s:%ld:%ld: error: '%.*s': %s: %s:%ld:%ld: '%.*s'\n",
-                file, (long)t->linenum, (long)t->pos, len, s, msg,
+        fb_print_error(P, "%s:%ld:%ld: %s: '%.*s': %s: %s:%ld:%ld: '%.*s'\n",
+                file, (long)t->linenum, (long)t->pos, kind, len, s, msg,
                 peer_file, (long)peer->linenum, (long)peer->pos, (int)peer->len, peer->text);
     } else if (!t && !peer) {
         fb_print_error(P, "error: %s\n", msg);
     } else if (peer) {
         peer_file = error_find_file_of_token(P, peer);
-        fb_print_error(P, "error: %s: %s:%ld:%ld: '%.*s'\n",
-                msg,
+        fb_print_error(P, "%s: %s: %s:%ld:%ld: '%.*s'\n",
+                kind, msg,
                 peer_file, (long)peer->linenum, (long)peer->pos, (int)peer->len, peer->text);
     } else {
         fb_print_error(P, "internal error: unexpected state\n");
     }
-    ++P->failed;
+    if (!is_warning) {
+        ++P->failed;
+    }
+}
+
+void error_report(fb_parser_t *P, fb_token_t *t, const char *msg, fb_token_t *peer, const char *s, size_t len)
+{
+    error_report_ext(P, t, msg, peer, s, len, 0);
+}
+
+void warn_report(fb_parser_t *P, fb_token_t *t, const char *msg, fb_token_t *peer, const char *s, size_t len)
+{
+    error_report_ext(P, t, msg, peer, s, len, 1);
 }
 
 void error_ref_sym(fb_parser_t *P, fb_ref_t *ref, const char *msg, fb_symbol_t *s2)
